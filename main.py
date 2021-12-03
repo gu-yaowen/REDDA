@@ -25,7 +25,7 @@ def train():
     if args.device_id:
         th.cuda.set_device(args.device_id)
     th.set_default_tensor_type(th.FloatTensor)
-    data = pd.read_csv(args.dataset+'.csv')
+    data = pd.read_csv('.\\dataset\\'+args.dataset+'.csv')
     data = data.astype('int64')
     data = data.sample(frac=1).reset_index(drop=True).values
     criterion = th.nn.BCEWithLogitsLoss()
