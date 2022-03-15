@@ -54,5 +54,22 @@ Other files:
 * ``KFCdataset_baseline.csv``: binarized drug-disease matirx with a demension of **894×454**.
 
 # MODDA model
-![MODDA architecture](https://github.com/gu-yaowen/MODDA/blob/main/model_structure.png)
+![MODDA architecture](https://github.com/gu-yaowen/MODDA/blob/main/model_structure.gif)
 ## Requirement
+Pytorch == 1.7.0
+
+DGL == 0.5.2
+## Run
+    python main.py -id {DEVICE ID} -da KFCdataset_baseline -sp {SAVED PATH}
+    Optional Argument:
+      -fo Number of k-folds cross-validation
+      -ep Number of epoches
+      -lr Learning rate
+      -wd Weight decay
+      -pa Patience in early stopping
+      -hf Dimension of hiddent feats
+      -he Number of heads in graph attention
+      -dp Dropout rate
+ 
+# Contact
+We welcome you to contact us (email: gu.yaowen@imicams.ac.cn) for any questions and cooperations.
