@@ -54,5 +54,5 @@ Other files:
 * ``KFCdataset_baseline.csv``: binarized drug-disease matirx with a demension of **894×454**.
 
 # MODDA model
-
+![MODDA architecture]()
 ## Requirement
