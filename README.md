@@ -54,7 +54,7 @@ Other files:
 * ``KFCdataset_baseline.csv``: binarized drug-disease matirx with a demension of **894×454**.
 
 # MODDA model
-![MODDA architecture](https://github.com/gu-yaowen/MODDA/blob/main/model_structure.gif)
+![MODDA architecture](https://github.com/gu-yaowen/MODDA/blob/main/model_structure.png)
 ## Requirement
 Pytorch == 1.7.0
 
