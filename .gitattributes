@@ -1,2 +1,0 @@
-drug.csv filter=lfs diff=lfs merge=lfs -text
-dataset/omics/drug.csv filter=lfs diff=lfs merge=lfs -text
