@@ -1,12 +1,12 @@
-# MODDA
-Code and Dataset for "MODDA: a drug repositioning method based on a large-scale multi-omics heterogeneous network".
+# REDDA
+Code and Dataset for "REDDA: integrating multiple biological relations to heterogeneous graph neural network for drug-disease association prediction".
 # Reference
-If you make advantage of the MODDA model or use the datasets released in our paper, please cite the following in your manuscript:
+If you make advantage of the REDDA model or use the datasets released in our paper, please cite the following in your manuscript:
 
 TBD
 
 # Benchmark Dataset
-Our proposed multi-omics-based drug repositioning benchmark dataset includes **894** drugs, **454** diseases, and **2704** drug-disease associations. The files are as shown:
+Our proposed drug repositioning benchmark dataset includes **894** drugs, **454** diseases, and **2704** drug-disease associations. The files are as shown:
 > ``Omics`` \
 The node mappings of benchmark identifiers and external identifiers.
 >> * ``drug.csv`` \
@@ -21,7 +21,7 @@ Benchmark IDs -- KEGG IDs
 Benchmark IDs -- MeSH IDs
 
 > ``Interactions`` \
-The edges whose start nodes and destination nodes belong to the same omics type.
+The edges whose start nodes and destination nodes belong to the same node type.
 >> * ``drug-drug.csv`` \
 Drug1 IDs -- Drug2 IDs -- ECFP4 similarity
 >> * ``protein-protein.csv`` \
@@ -34,7 +34,7 @@ Pathway1 IDs -- Pathway2 IDs
 Disease1 IDs -- Disease2 IDs -- MeSH similarity
 
 > ``Associations`` \
-The edges whose start nodes and destination nodes belong to different omics types.
+The edges whose start nodes and destination nodes belong to different node types.
 >> * ``drug-protein.csv`` \
 Drug IDs -- Protein IDs
 >> * ``protein-gene.csv`` \
