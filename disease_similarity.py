@@ -113,12 +113,10 @@ def get_Disease_list():
         return Disease_list
 
 
-# start = time.time()
 # Disease_list =get_Disease_list()
+# input a list contains string-type disease MeSH id 
 df = pd.read_csv('.\\associations\\pathway_disease.csv')
 Disease_list = list(df['Disease'].value_counts().index)
-# print(Disease_list)
+# calculate the Mesh similarity based on web search
 dis_sim = get_Mesh_sim_mat(Disease_list)
 np.savetxt('DisSim.txt', dis_sim)
-# end = time.time()
-# print(end-start)
