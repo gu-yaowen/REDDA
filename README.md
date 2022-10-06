@@ -3,8 +3,17 @@ Code and Dataset for "REDDA: integrating multiple biological relations to hetero
 # Reference
 If you make advantage of the REDDA model or use the datasets released in our paper, please cite the following in your manuscript:
 
-TBD
-
+```
+@article{10.1016/j.compbiomed.2022.106127,
+author = {Yaowen Gu, Si Zheng, Qijin Yin, Rui Jiang, Jiao Li},
+title = "{REDDA: Integrating multiple biological relations to heterogeneous graph neural network for drug-disease association prediction}",
+journal = {Computers in Biology and Medicine},
+year = {2022},
+month = {11},
+issn = {0010-4825},
+doi = {10.1016/j.compbiomed.2022.106127},
+}
+```
 # Benchmark Dataset
 Our proposed drug repositioning benchmark dataset includes **894** drugs, **454** diseases, and **2704** drug-disease associations. The files are as shown:
 > ``Omics`` \
