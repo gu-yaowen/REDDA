@@ -62,6 +62,8 @@ Other files:
 
 * ``KFCdataset_baseline.csv``: binarized drug-disease matirx with a demension of **894×454**.
 
+Similarly, a re-curated B-dataset is also used and stored in this repo, with the same file naming and hierarchy division.
+
 # REDDA model
 ![REDDA architecture](https://github.com/gu-yaowen/REDDA/blob/main/model_structure.png)
 ## Requirement
