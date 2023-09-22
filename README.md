@@ -1,4 +1,7 @@
 # REDDA
+![Visits Badge](https://img.shields.io/badge/dynamic/json?label=visits&query=$.message&color=blue&url=https://hits.dwyl.com/gu-yaowen/REDDA.json)
+![Downloads](https://img.shields.io/github/downloads/gu-yaowen/REDDA/total.svg)
+
 Code and Dataset for "REDDA: integrating multiple biological relations to heterogeneous graph neural network for drug-disease association prediction".
 # Reference
 If you make advantage of the REDDA model or use the datasets released in our paper, please cite the following in your manuscript:
