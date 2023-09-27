@@ -78,53 +78,68 @@ class SemanticAttention(nn.Module):
 class SubnetworkEncoder(nn.Module):
     """Topological subnet embedding block."""
 
-    def __init__(self, in_feats, out_feats, dropout):
+    def __init__(self, ntypes, in_feats, out_feats, dropout):
         super(SubnetworkEncoder, self).__init__()
+        self.ntypes = ntypes
         self.drug_disease = Node_Embedding(in_feats, out_feats, dropout,
-                                           ['drug_drug', 'drug_disease', 'disease_disease'])
-        self.drug_protein = Node_Embedding(in_feats, out_feats, dropout,
-                                           ['drug_drug', 'drug_protein', 'protein_protein'])
-        self.protein_gene = Node_Embedding(in_feats, out_feats, dropout,
-                                           ['protein_protein', 'protein_gene', 'gene_gene'])
-        self.gene_pathway = Node_Embedding(in_feats, out_feats, dropout,
-                                           ['gene_gene', 'gene_pathway', 'pathway_pathway'])
-        self.pathway_disease = Node_Embedding(in_feats, out_feats, dropout,
-                                              ['pathway_pathway', 'pathway_disease', 'disease_disease'])
+                                            ['drug_drug', 'drug_disease', 'disease_disease'])
+        if 'drug' in ntypes and 'protein' in ntypes:
+            self.drug_protein = Node_Embedding(in_feats, out_feats, dropout,
+                                         ['drug_drug', 'drug_protein', 'protein_protein'])
+        if 'protein' in ntypes and 'gene' in ntypes:
+            self.protein_gene = Node_Embedding(in_feats, out_feats, dropout,
+                                               ['protein_protein', 'protein_gene', 'gene_gene'])
+        if 'gene' in ntypes and 'pathway' in ntypes:
+            self.gene_pathway = Node_Embedding(in_feats, out_feats, dropout,
+                                               ['gene_gene', 'gene_pathway', 'pathway_pathway'])
+        if 'pathway' in ntypes and 'disease' in ntypes:
+            self.pathway_disease = Node_Embedding(in_feats, out_feats, dropout,
+                                                  ['pathway_pathway', 'pathway_disease', 'disease_disease'])
         self.semantic_attention = SemanticAttention(in_feats=out_feats)
 
     def forward(self, g, h, bn=False, dp=False):
-        new_h = {'drug': [], 'protein': [], 'gene': [], 'pathway': [], 'disease': []}
+        new_h = {}
+        for ntype in self.ntypes:
+            new_h[ntype] = []
+
         # drug-disease subnet
         g_ = g.edge_type_subgraph(['drug_drug', 'drug_disease', 'disease_disease'])
         h_ = self.drug_disease(g_, {'drug': h['drug'], 'disease': h['disease']}, bn, dp)
         new_h['drug'].append(h_['drug'])
         new_h['disease'].append(h_['disease'])
+
         # drug-protein subnet
-        g_ = g.edge_type_subgraph(['drug_drug', 'drug_protein', 'protein_protein'])
-        h_ = self.drug_protein(g_, {'drug': h['drug'], 'protein': h['protein']}, bn, dp)
-        new_h['drug'].append(h_['drug'])
-        new_h['protein'].append(h_['protein'])
+        if 'drug' in self.ntypes and 'protein' in self.ntypes:
+            g_ = g.edge_type_subgraph(['drug_drug', 'drug_protein', 'protein_protein'])
+            h_ = self.drug_protein(g_, {'drug': h['drug'], 'protein': h['protein']}, bn, dp)
+            new_h['drug'].append(h_['drug'])
+            new_h['protein'].append(h_['protein'])
+
         # protein-gene subnet
-        g_ = g.edge_type_subgraph(['protein_protein', 'protein_gene', 'gene_gene'])
-        h_ = self.protein_gene(g_, {'protein': h['protein'], 'gene': h['gene']}, bn, dp)
-        new_h['protein'].append(h_['protein'])
-        new_h['gene'].append(h_['gene'])
+        if 'protein' in self.ntypes and 'gene' in self.ntypes:
+            g_ = g.edge_type_subgraph(['protein_protein', 'protein_gene', 'gene_gene'])
+            h_ = self.protein_gene(g_, {'protein': h['protein'], 'gene': h['gene']}, bn, dp)
+            new_h['protein'].append(h_['protein'])
+            new_h['gene'].append(h_['gene'])
+
         # gene-pathway subnet
-        g_ = g.edge_type_subgraph(['gene_gene', 'gene_pathway', 'pathway_pathway'])
-        h_ = self.gene_pathway(g_, {'gene': h['gene'], 'pathway': h['pathway']}, bn, dp)
-        new_h['gene'].append(h_['gene'])
-        new_h['pathway'].append(h_['pathway'])
+        if 'gene' in self.ntypes and 'pathway' in self.ntypes:
+            g_ = g.edge_type_subgraph(['gene_gene', 'gene_pathway', 'pathway_pathway'])
+            h_ = self.gene_pathway(g_, {'gene': h['gene'], 'pathway': h['pathway']}, bn, dp)
+            new_h['gene'].append(h_['gene'])
+            new_h['pathway'].append(h_['pathway'])
+
         # pathway-disease subnet
-        g_ = g.edge_type_subgraph(['pathway_pathway', 'pathway_disease', 'disease_disease'])
-        h_ = self.pathway_disease(g_, {'pathway': h['pathway'], 'disease': h['disease']}, bn, dp)
-        new_h['pathway'].append(h_['pathway'])
-        new_h['disease'].append(h_['disease'])
+        if 'pathway' in self.ntypes and 'disease' in self.ntypes:
+            g_ = g.edge_type_subgraph(['pathway_pathway', 'pathway_disease', 'disease_disease'])
+            h_ = self.pathway_disease(g_, {'pathway': h['pathway'], 'disease': h['disease']}, bn, dp)
+            new_h['pathway'].append(h_['pathway'])
+            new_h['disease'].append(h_['disease'])
+
         # aggragation with attention mechanism
-        h['drug'] = self.semantic_attention(torch.stack(new_h['drug'], dim=1))
-        h['protein'] = self.semantic_attention(torch.stack(new_h['protein'], dim=1))
-        h['gene'] = self.semantic_attention(torch.stack(new_h['gene'], dim=1))
-        h['pathway'] = self.semantic_attention(torch.stack(new_h['pathway'], dim=1))
-        h['disease'] = self.semantic_attention(torch.stack(new_h['disease'], dim=1))
+        for ntype in self.ntypes:
+            h[ntype] = torch.stack(new_h[ntype], dim=1)
+            h[ntype] = self.semantic_attention(h[ntype])
         return h
 
 
@@ -160,13 +175,26 @@ class Model(nn.Module):
 
     def __init__(self, etypes, ntypes, in_feats, hidden_feats, num_heads, dropout):
         super(Model, self).__init__()
-        self.drug_linear = nn.Linear(in_feats, hidden_feats)
-        nn.init.xavier_normal_(self.drug_linear.weight)
-        self.disease_linear = nn.Linear(in_feats, hidden_feats)
-        nn.init.xavier_normal_(self.disease_linear.weight)
+        self.ntypes = ntypes
+        if 'drug' in ntypes:
+            self.drug_linear = nn.Linear(in_feats, hidden_feats)
+            nn.init.xavier_normal_(self.drug_linear.weight)
+        if 'disease' in ntypes:
+            self.disease_linear = nn.Linear(in_feats, hidden_feats)
+            nn.init.xavier_normal_(self.disease_linear.weight)
+        if 'protein' in ntypes:
+            self.protein_linear = nn.Linear(in_feats, hidden_feats)
+            nn.init.xavier_normal_(self.protein_linear.weight)
+        if 'gene' in ntypes:
+            self.gene_linear = nn.Linear(in_feats, hidden_feats)
+            nn.init.xavier_normal_(self.gene_linear.weight)
+        if 'pathway' in ntypes:
+            self.pathway_linear = nn.Linear(in_feats, hidden_feats)
+            nn.init.xavier_normal_(self.pathway_linear.weight)
+
         self.feat_generate_layer1 = Node_Embedding(hidden_feats, hidden_feats, dropout, etypes)
         self.feat_generate_layer2 = Node_Embedding(hidden_feats, hidden_feats, dropout, etypes)
-        self.subnet_layer = SubnetworkEncoder(hidden_feats, hidden_feats, dropout)
+        self.subnet_layer = SubnetworkEncoder(ntypes, hidden_feats, hidden_feats, dropout)
         self.totalnet_layer = Graph_attention(hidden_feats, hidden_feats, num_heads, dropout)
         self.layer_attention_layer_drug = SemanticAttention(hidden_feats)
         self.layer_attention_layer_dis = SemanticAttention(hidden_feats)
@@ -174,9 +202,18 @@ class Model(nn.Module):
 
     def forward(self, g, x):
         drug_emb_list, dis_emb_list = [], []
-        h = {'drug': x['drug'], 'disease': x['disease']}
+
+        h = {}
+        for ntype in self.ntypes:
+            h[ntype] = x[ntype]
         h['drug'] = self.drug_linear(h['drug'])
         h['disease'] = self.disease_linear(h['disease'])
+        if 'protein' in self.ntypes:
+            h['protein'] = self.protein_linear(h['protein'])
+        if 'gene' in self.ntypes:
+            h['gene'] = self.gene_linear(h['gene'])
+        if 'pathway' in self.ntypes:
+            h['pathway'] = self.pathway_linear(h['pathway'])
         drug_emb_list.append(h['drug'])
         dis_emb_list.append(h['disease'])
 

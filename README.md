@@ -18,7 +18,7 @@ doi = {10.1016/j.compbiomed.2022.106127},
 }
 ```
 # Benchmark Dataset
-Our proposed drug repositioning benchmark dataset includes **894** drugs, **454** diseases, and **2704** drug-disease associations. The files are as shown:
+Our proposed drug repositioning benchmark dataset (**Kdataset**), including **894** drugs, **454** diseases, **18,877** proteins, **20,561** genes, **314** pathways, **2,704** drug-disease associations, **4,397** drug-protein associations, **18,545** protein-gene associations, **25,995** gene-pathway associations, **19,530** pathway-disease associations, **201,382** protein-protein interactions, **712,546** gene-gene interactions, and **1,669** pathway-pathway interactions. The files are as shown:
 > ``Omics`` \
 The node mappings of benchmark identifiers and external identifiers.
 >> * ``drug.csv`` \
@@ -55,7 +55,7 @@ Protein IDs -- Gene IDs
 Gene IDs -- Pathway IDs
 >> * ``pathway-disease.csv`` \
 Pathway IDs -- Disease IDs
->> * ``KFCdataset.csv`` \
+>> * ``Kdataset.csv`` \
 Drug IDs -- Disease IDs
 
 Other files:
@@ -63,18 +63,19 @@ Other files:
 
 * ``disease_disease_baseline.csv``: binarized disease-disease matrix with a demension of **454×454**. Note that the binary values are calculated by a Top15 filtering of disease-disease similarity.
 
-* ``KFCdataset_baseline.csv``: binarized drug-disease matirx with a demension of **894×454**.
+* ``Kdataset_baseline.csv``: binarized drug-disease matirx with a demension of **894×454**.
 
-Similarly, a re-curated B-dataset is also used and stored in this repo, with the same file naming and hierarchy division.
+Similarly, a re-curated **B-dataset** is also used and stored in this repo, with the same file naming and hierarchy division, including **269** drugs, **598** diseases, **6,040** proteins, **18,416** drug-disease associations, **2,107** drug-protein associations, **17,631** protein-disease associations, and **592,926** protein-protein interactions.
 
 # REDDA model
 ![REDDA architecture](https://github.com/gu-yaowen/REDDA/blob/main/model_structure.png)
 ## Requirement
-Pytorch == 1.7.0
+Pytorch >= 1.7.0
 
-DGL == 0.5.2
+DGL >= 0.5.2
+
 ## Run
-    python main.py -id {DEVICE ID} -da KFCdataset_baseline -sp {SAVED PATH}
+    python main.py -id {DEVICE ID} -da Kdataset_baseline -sp {SAVED PATH}
     Optional Argument:
       -fo Number of k-folds cross-validation
       -ep Number of epoches
